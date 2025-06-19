@@ -23,6 +23,7 @@ export default defineContentScript({
   cssInjectionMode: 'ui',
   
   async main(ctx) {
+    await injectScript('/main-world.js');
     // Wait for the player to be available before trying to mount the UI
     await waitForElement(selector);
     console.log('YouTube player found, mounting UI...');

@@ -12,6 +12,12 @@ export default defineConfig({
     description: 'Search for words in a video and see when they were spoken.',
     permissions: ['storage', 'tabs', 'scripting'],
     host_permissions: ["*://*.youtube.com/*"],
+    web_accessible_resources: [
+      {
+        resources: ['main-world.js'],
+        matches: ['*://*.youtube.com/*'],
+      },
+    ],
   },
   vite: () => ({
     plugins: [
