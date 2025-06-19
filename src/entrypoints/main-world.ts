@@ -6,7 +6,6 @@ export default defineUnlistedScript(() => {
   const getDuration = () => {
     if (player && typeof player.getDuration === 'function') {
       const duration = player.getDuration();
-      console.log('Video duration from main world:', duration);
 
       // We need to send this value back to our content script.
       // We'll use window.postMessage for that.
@@ -28,7 +27,6 @@ export default defineUnlistedScript(() => {
     }
 
     const { command, payload } = event.data;
-    console.log('Main world received command:', command, 'with payload:', payload);
 
     if (command === 'seekTo' && player && typeof player.seekTo === 'function') {
       player.seekTo(payload, true);

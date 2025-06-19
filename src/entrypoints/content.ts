@@ -10,9 +10,9 @@ function waitForElement(selector: string): Promise<Element> {
     const check = () => {
       const element = document.querySelector(selector);
       if (element) {
-        resolve(element);
+        setTimeout(() => resolve(element), 500);
       } else {
-        setTimeout(check, 2000);
+        setTimeout(check, 500);
       }
     };
     check();

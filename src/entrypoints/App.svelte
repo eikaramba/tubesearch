@@ -61,21 +61,27 @@
       payload: time,
     }, '*');
   }
+
+  function preventDefault(event: Event) {
+    event.stopPropagation();
+    searchTerm = (event.target as HTMLInputElement).value;
+  }
 </script>
 
 <div class="container">
-  <p>Video Duration: {$videoDuration ? $videoDuration.toFixed(2) + 's' : 'Loading...'}</p>
-  <input id="search-words-transcripts" type="text" bind:value={searchTerm} placeholder="Search transcript..." />
-  <button on:click={search}>Search</button>
+  <input id="search-words-transcripts" type="text" onkeydown={preventDefault} placeholder="Search transcript..." />
+  <button onclick={search}>Search</button>
+  {#if segments.length > 0}
   <div class="timeline">
     {#each segments as segment}
       <div 
         class="dot" 
         style="left: {segment.position}%" 
-        on:click={() => seekTo(segment.time)}
+        onclick={() => seekTo(segment.time)}
       ></div>
     {/each}
   </div>
+  {/if}
 </div>
 
 <style>
