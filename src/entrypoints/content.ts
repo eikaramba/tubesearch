@@ -1,16 +1,22 @@
-import '../app.css';
-import Content from "@/entrypoints/content/Content.svelte";
+import App from './App.svelte';
 import { mount } from "svelte";
 
 export default defineContentScript({
-  allFrames: true,
-  matches: ['*://*/*'],
-  main() {
-    // const appVersion = browser?.runtime?.getManifest()?.version || "0.0.0-dev"
-    console.log('Hello content.');
-
-    mount(Content, {
-      target: document.body
-    })
-  }
+  matches: ['*://*.youtube.com/watch*'],
+  cssInjectionMode: 'ui',
+  
+  async main(ctx) {
+    const ui = await createShadowRootUi(ctx, {
+      name: 'youtube-word-finder',
+      position: 'inline',
+      anchor: 'ytd-player',
+      
+      onMount: (container: HTMLElement) => {
+        mount(App, {
+            target: container
+        });
+      },
+    });
+    ui.mount();
+  },
 });
