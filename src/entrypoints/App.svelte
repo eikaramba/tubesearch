@@ -6,18 +6,28 @@
   let searchTerm = '';
   let segments: Segment[] = [];
   let hoveredSegment: Segment | null = null;
+  let isLoading = false;
 
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF'];
 
   async function search(e: SubmitEvent) {
     e.preventDefault();
-    await ensureTranscriptIsOpen();
-    
-    await new Promise(resolve => setTimeout(resolve,  1000));
+    isLoading = true;
+    segments = [];
 
+    try {
+      await ensureTranscriptIsOpen();
+    } catch (error) {
+      console.error(error);
+      isLoading = false;
+      // Optionally, show an error message to the user
+      return;
+    }
+    
     const transcriptSegments = Array.from(document.querySelectorAll('ytd-transcript-segment-renderer'));
     if (transcriptSegments.length === 0) {
       console.error("Could not find transcript segments.");
+      isLoading = false;
       return;
     }
     
@@ -49,17 +59,37 @@
     });
 
     segments = foundSegments.sort((a, b) => a.time - b.time);
+    isLoading = false;
   }
 
-  async function ensureTranscriptIsOpen() {
-    const transcriptButton = document.querySelector<HTMLButtonElement>("ytd-video-description-transcript-section-renderer button");
-    
-    // If transcript is already open, the segments will be visible.
-    const segmentsVisible = document.querySelector('ytd-transcript-segment-renderer');
+  async function ensureTranscriptIsOpen(): Promise<void> {
+    const transcriptOpen = () => document.querySelector('ytd-transcript-segment-renderer');
 
-    if (transcriptButton && !segmentsVisible) {
-      transcriptButton.click();
+    if (transcriptOpen()) {
+      return Promise.resolve();
     }
+
+    const transcriptButton = document.querySelector<HTMLButtonElement>("ytd-video-description-transcript-section-renderer button");
+    if (transcriptButton) {
+      transcriptButton.click();
+    } else {
+      return Promise.reject("Transcript button not found.");
+    }
+    
+    return new Promise((resolve, reject) => {
+      let attempts = 0;
+      const maxAttempts = 25; // 5 seconds
+      const interval = setInterval(() => {
+        if (transcriptOpen()) {
+          clearInterval(interval);
+          resolve();
+        } else if (attempts > maxAttempts) {
+          clearInterval(interval);
+          reject("Could not open transcript.");
+        }
+        attempts++;
+      }, 200);
+    });
   }
 
   function parseTimestamp(timestamp: string): number {
@@ -115,9 +145,14 @@
     />
     <button
       type="submit"
-      class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+      class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
+      disabled={isLoading}
     >
-      Search
+      {#if isLoading}
+        <span>Searching...</span>
+      {:else}
+        Search
+      {/if}
     </button>
   </form>
   {#if segments.length > 0}
