@@ -26,13 +26,20 @@ export default defineContentScript({
   async main(ctx) {
     window.addEventListener('message', (event) => {
       // We only accept messages from ourselves
-      if (event.source !== window || event.data.type !== 'FROM_PAGE') {
+      if (event.source !== window) {
         return;
       }
 
-      console.log('Content script received message:', event.data);
-      if (event.data.command === 'getDuration') {
-        videoDuration.set(event.data.payload);
+      const { type, command, payload } = event.data;
+
+      if (type === 'FROM_PAGE') {
+        console.log('Content script received message from page:', event.data);
+        if (command === 'getDuration') {
+          videoDuration.set(payload);
+        }
+      } else if (type === 'FROM_CONTENT') {
+        // Forward message to main world, this time with a different type
+        window.postMessage({ type: 'TO_PAGE', command, payload }, '*');
       }
     });
     

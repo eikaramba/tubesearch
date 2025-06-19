@@ -55,10 +55,11 @@
   }
 
   function seekTo(time: number) {
-    const player = document.querySelector<YouTubePlayerDiv>('#movie_player');
-    if (player) {
-      player.seekTo(time, true);
-    }
+    window.postMessage({
+      type: 'FROM_CONTENT',
+      command: 'seekTo',
+      payload: time,
+    }, '*');
   }
 </script>
 
