@@ -1,0 +1,60 @@
+{
+  "name": "svelte-5-extension",
+  "description": "A starter template for building browser extensions with Svelte 5, Tailwind 4, and WXT",
+  "private": true,
+  "version": "0.0.1",
+  "keywords": [
+    "wxt",
+    "svelte",
+    "svelte-5",
+    "tailwind",
+    "tailwind-4",
+    "browser-extension",
+    "chrome-extension",
+    "firefox-extension",
+    "extension"
+  ],
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "postinstall": "wxt prepare",
+    "clean": "git clean -fXd"
+  },
+  "dependencies": {
+    "@types/youtube-player": "^5.5.11",
+    "mode-watcher": "^1.0.8",
+    "runed": "^0.28.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.1.0",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/vite": "4.1.10",
+    "@tsconfig/svelte": "^5.0.4",
+    "@types/chrome": "^0.0.326",
+    "@wxt-dev/module-svelte": "^2.0.3",
+    "prettier": "^3.5.3",
+    "prettier-plugin-svelte": "^3.4.0",
+    "prettier-plugin-tailwindcss": "^0.6.12",
+    "svelte": "5.34.6",
+    "svelte-check": "^4.2.2",
+    "tailwindcss": "4.1.10",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vite-plugin-top-level-await": "^1.5.0",
+    "vite-plugin-wasm": "^3.4.1",
+    "wxt": "^0.20.7"
+  },
+  "overrides": {
+    "@sveltejs/vite-plugin-svelte": "^4.0.0-next"
+  },
+  "resolutions": {
+    "@sveltejs/vite-plugin-svelte": "^4.0.0-next"
+  }
+}
