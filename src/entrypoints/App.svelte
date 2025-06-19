@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Segment, YouTubePlayerDiv } from '../types';
-  import { videoDuration } from '../store';
+  import { videoDuration } from '../store.svelte';
   import "../app.css";
 
   let searchTerm = '';
@@ -13,7 +13,7 @@
     e.preventDefault();
     await ensureTranscriptIsOpen();
     
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve,  1000));
 
     const transcriptSegments = Array.from(document.querySelectorAll('ytd-transcript-segment-renderer'));
     if (transcriptSegments.length === 0) {
@@ -21,7 +21,7 @@
       return;
     }
     
-    const videoDurationValue = $videoDuration ?? 0;
+    const videoDurationValue = videoDuration.value ?? 0;
 
     const parsedSegments: { time: number; text: string }[] = transcriptSegments.map(segment => {
       const timeEl = segment.querySelector('.segment-timestamp') as HTMLElement;
@@ -100,25 +100,10 @@
     transform: translate(-50%, -50%);
     top: 50%;
   }
-  .popup {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 8px;
-    width: 400px;
-    font-size: 12px;
-    background-color: black;
-    color: white;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    margin-bottom: 8px;
-  }
 </style>
 
-<div class="p-4 bg-gray-100 rounded-lg shadow-md">
-  <form onsubmit={search} class="flex gap-2">
+<div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
+  <form onsubmit={search} class="flex gap-2 relative">
     <input
       id="search-words-transcripts"
       type="text"
@@ -126,7 +111,7 @@
       onkeyup={preventDefault}
       onkeypress={preventDefault}
       placeholder="Search transcript..."
-      class="flex-grow px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      class="flex-grow px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
     />
     <button
       type="submit"
@@ -136,7 +121,7 @@
     </button>
   </form>
   {#if segments.length > 0}
-  <div class="relative w-full h-5 mt-4 bg-gray-300 rounded-full">
+  <div class="relative w-full h-5 mt-4 bg-gray-300 dark:bg-gray-700 rounded-full">
     {#each segments as segment}
       <div
         class="dot"
@@ -146,7 +131,7 @@
         onclick={() => seekTo(segment.time)}
       >
         {#if hoveredSegment === segment}
-          <div class="popup">
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 p-2 w-[400px] bg-white text-black dark:bg-black dark:text-white rounded shadow-lg z-[1000] mb-2">
             {@html getHighlightedText(segment.text, segment.keyword)}
           </div>
         {/if}

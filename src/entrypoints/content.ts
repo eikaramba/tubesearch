@@ -1,6 +1,6 @@
 import App from './App.svelte';
 import { mount } from "svelte";
-import { videoDuration } from '../store';
+import { videoDuration } from '../store.svelte';
 
 const selector = '#player'; //ytd-player
 
@@ -33,9 +33,8 @@ export default defineContentScript({
       const { type, command, payload } = event.data;
 
       if (type === 'FROM_PAGE') {
-        console.log('Content script received message from page:', event.data);
         if (command === 'getDuration') {
-          videoDuration.set(payload);
+          videoDuration.value = payload;
         }
       } else if (type === 'FROM_CONTENT') {
         // Forward message to main world, this time with a different type

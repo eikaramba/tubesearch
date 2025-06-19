@@ -1,0 +1,1 @@
+export const videoDuration = $state({value:0});
