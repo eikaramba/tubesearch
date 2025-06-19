@@ -5,4 +5,7 @@ export type YouTubePlayerDiv = HTMLDivElement & YouTubePlayer;
 export interface Segment {
   time: number;
   position: number;
+  text: string;
+  keyword: string;
+  color: string;
 }

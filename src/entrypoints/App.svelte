@@ -5,12 +5,14 @@
 
   let searchTerm = '';
   let segments: Segment[] = [];
+  let hoveredSegment: Segment | null = null;
 
-  async function search(e) {
+  const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF'];
+
+  async function search(e: SubmitEvent) {
     e.preventDefault();
     await ensureTranscriptIsOpen();
     
-    // Allow time for the transcript to render after being opened
     await new Promise(resolve => setTimeout(resolve, 500));
 
     const transcriptSegments = Array.from(document.querySelectorAll('ytd-transcript-segment-renderer'));
@@ -29,12 +31,24 @@
       return { time, text };
     });
 
-    const filteredSegments = parsedSegments.filter(segment => segment.text.includes(searchTerm));
+    const searchKeywords = searchTerm.split(',').map(k => k.trim()).filter(k => k);
+    let foundSegments: Segment[] = [];
 
-    segments = filteredSegments.map(segment => ({
-      time: segment.time,
-      position: videoDurationValue > 0 ? (segment.time / videoDurationValue) * 100 : 0,
-    }));
+    searchKeywords.forEach((keyword, index) => {
+      const color = colors[index % colors.length];
+      const keywordSegments = parsedSegments
+        .filter(segment => segment.text.toLowerCase().includes(keyword.toLowerCase()))
+        .map(segment => ({
+          time: segment.time,
+          position: videoDurationValue > 0 ? (segment.time / videoDurationValue) * 100 : 0,
+          text: segment.text,
+          keyword: keyword,
+          color: color,
+        }));
+      foundSegments = foundSegments.concat(keywordSegments);
+    });
+
+    segments = foundSegments.sort((a, b) => a.time - b.time);
   }
 
   async function ensureTranscriptIsOpen() {
@@ -64,11 +78,44 @@
     }, '*');
   }
 
+  function getHighlightedText(text: string, keyword: string) {
+    const regex = new RegExp(`(${keyword})`, 'gi');
+    return text.replace(regex, '<b>$1</b>');
+  }
+
   function preventDefault(event: Event) {
     event.stopPropagation();
     searchTerm = (event.target as HTMLInputElement).value;
   }
+
 </script>
+
+<style>
+  .dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    top: 50%;
+  }
+  .popup {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px;
+    width: 400px;
+    font-size: 12px;
+    background-color: black;
+    color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-bottom: 8px;
+  }
+</style>
 
 <div class="p-4 bg-gray-100 rounded-lg shadow-md">
   <form onsubmit={search} class="flex gap-2">
@@ -76,6 +123,8 @@
       id="search-words-transcripts"
       type="text"
       onkeydown={preventDefault}
+      onkeyup={preventDefault}
+      onkeypress={preventDefault}
       placeholder="Search transcript..."
       class="flex-grow px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
@@ -90,11 +139,18 @@
   <div class="relative w-full h-5 mt-4 bg-gray-300 rounded-full">
     {#each segments as segment}
       <div
-        class="absolute w-3 h-3 bg-blue-500 rounded-full cursor-pointer -translate-x-1/2 top-1/2 -translate-y-1/2"
-        style="left: {segment.position}%"
+        class="dot"
+        style="left: {segment.position}%; background-color: {segment.color};"
+        onmouseover={() => hoveredSegment = segment}
+        onmouseout={() => hoveredSegment = null}
         onclick={() => seekTo(segment.time)}
-        title={`Found at ${segment.time}s`}
-      ></div>
+      >
+        {#if hoveredSegment === segment}
+          <div class="popup">
+            {@html getHighlightedText(segment.text, segment.keyword)}
+          </div>
+        {/if}
+      </div>
     {/each}
   </div>
   {/if}
