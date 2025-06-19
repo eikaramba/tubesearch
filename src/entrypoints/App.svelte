@@ -1,11 +1,13 @@
 <script lang="ts">
   import type { Segment, YouTubePlayerDiv } from '../types';
   import { videoDuration } from '../store';
+  import "../app.css";
 
   let searchTerm = '';
   let segments: Segment[] = [];
 
-  async function search() {
+  async function search(e) {
+    e.preventDefault();
     await ensureTranscriptIsOpen();
     
     // Allow time for the transcript to render after being opened
@@ -68,40 +70,32 @@
   }
 </script>
 
-<div class="container">
-  <input id="search-words-transcripts" type="text" onkeydown={preventDefault} placeholder="Search transcript..." />
-  <button onclick={search}>Search</button>
+<div class="p-4 bg-gray-100 rounded-lg shadow-md">
+  <form onsubmit={search} class="flex gap-2">
+    <input
+      id="search-words-transcripts"
+      type="text"
+      onkeydown={preventDefault}
+      placeholder="Search transcript..."
+      class="flex-grow px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    <button
+      type="submit"
+      class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+    >
+      Search
+    </button>
+  </form>
   {#if segments.length > 0}
-  <div class="timeline">
+  <div class="relative w-full h-5 mt-4 bg-gray-300 rounded-full">
     {#each segments as segment}
-      <div 
-        class="dot" 
-        style="left: {segment.position}%" 
+      <div
+        class="absolute w-3 h-3 bg-blue-500 rounded-full cursor-pointer -translate-x-1/2 top-1/2 -translate-y-1/2"
+        style="left: {segment.position}%"
         onclick={() => seekTo(segment.time)}
+        title={`Found at ${segment.time}s`}
       ></div>
     {/each}
   </div>
   {/if}
 </div>
-
-<style>
-  .container {
-    padding: 1rem;
-    background-color: #f0f0f0;
-    border-radius: 8px;
-  }
-  .timeline {
-    position: relative;
-    height: 20px;
-    background-color: #ccc;
-    margin-top: 1rem;
-  }
-  .dot {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background-color: blue;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-</style>
