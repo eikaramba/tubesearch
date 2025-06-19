@@ -1,5 +1,6 @@
 import App from './App.svelte';
 import { mount } from "svelte";
+import { videoDuration } from '../store';
 
 const selector = '#player'; //ytd-player
 
@@ -23,26 +24,38 @@ export default defineContentScript({
   cssInjectionMode: 'ui',
   
   async main(ctx) {
+    window.addEventListener('message', (event) => {
+      // We only accept messages from ourselves
+      if (event.source !== window || event.data.type !== 'FROM_PAGE') {
+        return;
+      }
+
+      console.log('Content script received message:', event.data);
+      if (event.data.command === 'getDuration') {
+        videoDuration.set(event.data.payload);
+      }
+    });
+    
     await injectScript('/main-world.js');
     // Wait for the player to be available before trying to mount the UI
-    await waitForElement(selector);
+    const playerElement = await waitForElement(selector);
     console.log('YouTube player found, mounting UI...');
 
-     mount(App, {
-      target: document.querySelector(selector)
-    })
-
-    // const ui = await createShadowRootUi(ctx, {
-    //   name: 'youtube-word-finder',
-    //   position: 'inline',
-    //   anchor:selector,
-      
-    //   onMount: (container: HTMLElement) => {
-    //     mount(App, {
-    //         target: container
-    //     });
-    //   },
+    // mount(App, {
+    //   target: playerElement,
     // });
-    // ui.mount();
+
+    const ui = await createShadowRootUi(ctx, {
+      name: 'youtube-word-finder',
+      position: 'inline',
+      anchor:selector,
+      
+      onMount: (container: HTMLElement) => {
+        mount(App, {
+            target: container
+        });
+      },
+    });
+    ui.mount();
   },
 });

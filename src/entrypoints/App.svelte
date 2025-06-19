@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { Segment, YouTubePlayerDiv } from '../types';
+  import { videoDuration } from '../store';
+
   let searchTerm = '';
   let segments: Segment[] = [];
 
@@ -15,9 +17,7 @@
       return;
     }
     
-    const player = getPlayer();
-    console.log("Player found:", player.getDuration);
-    const videoDuration = await player?.getDuration() ?? 0;
+    const videoDurationValue = $videoDuration ?? 0;
 
     const parsedSegments: { time: number; text: string }[] = transcriptSegments.map(segment => {
       const timeEl = segment.querySelector('.segment-timestamp') as HTMLElement;
@@ -31,7 +31,7 @@
 
     segments = filteredSegments.map(segment => ({
       time: segment.time,
-      position: videoDuration > 0 ? (segment.time / videoDuration) * 100 : 0,
+      position: videoDurationValue > 0 ? (segment.time / videoDurationValue) * 100 : 0,
     }));
   }
 
@@ -44,10 +44,6 @@
     if (transcriptButton && !segmentsVisible) {
       transcriptButton.click();
     }
-  }
-
-  function getPlayer(): YouTubePlayerDiv | null {
-    return document.querySelector<YouTubePlayerDiv>('#movie_player');
   }
 
   function parseTimestamp(timestamp: string): number {
@@ -67,7 +63,7 @@
 </script>
 
 <div class="container">
-  Dies ist ein kleiner test
+  <p>Video Duration: {$videoDuration ? $videoDuration.toFixed(2) + 's' : 'Loading...'}</p>
   <input id="search-words-transcripts" type="text" bind:value={searchTerm} placeholder="Search transcript..." />
   <button on:click={search}>Search</button>
   <div class="timeline">
