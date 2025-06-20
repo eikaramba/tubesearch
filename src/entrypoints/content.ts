@@ -27,7 +27,7 @@ export function waitForAllElements(selectors: Selector[]): Promise<Selector[]> {
 	// Create a promise that will resolve when all of the target elements are found.
 	return new Promise((resolve) => {
 		// Log a message to the console to let the user know what's happening.
-		console.log(`Waiting for ${selectors.join(", ")}`, "FgMagenta");
+		// console.log(`Waiting for ${selectors.join(", ")}`, "FgMagenta");
 		// Create a Set to store the selectors of elements that have been found. This prevents duplicate counting.
 		const foundSelectors = new Set<string>();
 		// Get the number of selectors in the array so we know how many elements we are waiting for.
@@ -45,7 +45,7 @@ export function waitForAllElements(selectors: Selector[]): Promise<Selector[]> {
 
 				// If the element is found, add the selector to our set of found selectors.
 				if (element) {
-					console.log(`Found element for selector: ${selector}`, "FgGreen");
+					// console.log(`Found element for selector: ${selector}`, "FgGreen");
 					foundSelectors.add(selector);
 				}
 			});
