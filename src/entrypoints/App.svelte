@@ -118,6 +118,17 @@
     searchTerm = (event.target as HTMLInputElement).value;
   }
 
+  function resetSearch() {
+    searchTerm = '';
+    segments = [];
+    hoveredSegment = null;
+  }
+  window.addEventListener('message', (event) => {
+    if (event.data.type === 'TO_PAGE' && event.data.command === 'resetSearch') {
+      resetSearch();
+    }
+  });
+
 </script>
 
 <style>

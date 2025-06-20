@@ -6,6 +6,7 @@ type Nullable<T> = T | null;
 type Selector = string;
 
 const selector = '#player';
+const watchPattern = new MatchPattern('*://*.youtube.com/watch*');
 
 // Helper function to wait for an element to be ready
 function waitForElement(selector: Selector): Promise<Element> {
@@ -27,70 +28,65 @@ export function waitForAllElements(selectors: Selector[]): Promise<Selector[]> {
 	return new Promise((resolve) => {
 		// Log a message to the console to let the user know what's happening.
 		console.log(`Waiting for ${selectors.join(", ")}`, "FgMagenta");
-		// Create a Map to store the elements as they are found.
-		const elementsMap = new Map<string, Nullable<Element>>();
+		// Create a Set to store the selectors of elements that have been found. This prevents duplicate counting.
+		const foundSelectors = new Set<string>();
 		// Get the number of selectors in the array so we know how many elements we are waiting for.
 		const { length: selectorsCount } = selectors;
-		// Create a counter for the number of elements that have been found.
-		let resolvedCount = 0;
-		// Create a MutationObserver to watch for changes in the DOM.
-		const observer = new MutationObserver(() => {
+
+		const check = () => {
 			// Loop through each of the selectors.
 			selectors.forEach((selector) => {
-				// Get the element that matches the selector.
-				const element = document.querySelector(selector);
-				// Add the element to the Map.
-				elementsMap.set(selector, element);
-				// If the element is not found, return early.
-				if (!element) {
+				// If we've already found this selector, don't check for it again.
+				if (foundSelectors.has(selector)) {
 					return;
 				}
-				// Increase the counter by 1.
-				resolvedCount++;
-				// If the number of resolved elements is equal to the number of selectors in the array, all of the elements have been found.
-				if (resolvedCount === selectorsCount) {
-					// Disconnect the observer so it doesn't keep running.
-					observer.disconnect();
-					// Get an array of the resolved elements.
-					const resolvedElements = selectors.map((selector) => (elementsMap.get(selector) ? selector : undefined)).filter(Boolean);
-					// Resolve the promise with the array of resolved elements.
-					resolve(resolvedElements);
+				// Get the element that matches the selector.
+				const element = document.querySelector(selector);
+
+				// If the element is found, add the selector to our set of found selectors.
+				if (element) {
+					console.log(`Found element for selector: ${selector}`, "FgGreen");
+					foundSelectors.add(selector);
 				}
 			});
-		});
-		// Start listening for changes to the DOM.
-		observer.observe(document, { childList: true, subtree: true });
-		// Loop through each of the selectors.
-		selectors.forEach((selector) => {
-			// Get the element that matches the selector.
-			const element = document.querySelector(selector);
-			// Add the element to the Map.
-			elementsMap.set(selector, element);
-			// If the element is not found, return early.
-			if (!element) {
-				return;
-			}
-			// Increase the counter by 1.
-			resolvedCount++;
-			// If the number of resolved elements is equal to the number of selectors in the array, all of the elements have been found.
-			if (resolvedCount === selectorsCount) {
+
+			// If the number of unique found selectors is equal to the number of selectors in the array, all of the elements have been found.
+			if (foundSelectors.size === selectorsCount) {
 				// Disconnect the observer so it doesn't keep running.
 				observer.disconnect();
-				// Get an array of the resolved elements.
-				const resolvedElements = selectors.map((selector) => (elementsMap.get(selector) ? selector : undefined)).filter(Boolean);
-				// Resolve the promise with the array of resolved elements.
-				resolve(resolvedElements);
+				// Resolve the promise with the array of selectors that have been found.
+				resolve(Array.from(foundSelectors));
 			}
-		});
+		};
+
+		// Create a MutationObserver to watch for changes in the DOM.
+		const observer = new MutationObserver(check);
+		
+		// Start listening for changes to the DOM.
+		observer.observe(document, { childList: true, subtree: true });
+
+		// Perform an initial check in case the elements are already on the page.
+		check();
 	});
 }
 
 export default defineContentScript({
-  matches: ['*://*.youtube.com/watch*'],
+  matches: ['*://*.youtube.com/*'],
   cssInjectionMode: 'ui',
   
   async main(ctx) {
-    window.addEventListener('message', (event) => {
+	
+	ctx.addEventListener(window, 'wxt:locationchange', ({ newUrl }) => {
+      if (watchPattern.includes(newUrl)) {
+		window.postMessage({ type: 'TO_PAGE', command: 'resetSearch' }, '*');
+	  }
+    });
+	mountUi(ctx)
+},
+});
+
+async function mountUi(ctx) {
+	window.addEventListener('message', (event) => {
       // We only accept messages from ourselves
       if (event.source !== window) {
         return;
@@ -109,13 +105,23 @@ export default defineContentScript({
     });
     
     // Wait for the player to be available before trying to mount the UI
-    await waitForAllElements(["div#player", "div#player-wide-container", "div#video-container", "div#player-container"]);
+    await waitForAllElements(["div#player", "div#video-container", "div#player-container","#related #items", "#description"]);
     // const playerElement = document.querySelector(selector);
     await injectScript('/main-world.js');
     console.log('YouTube player found, mounting UI...');
 
     // mount(App, {
     //   target: playerElement,
+    // });
+	// const ui = await createIntegratedUi(ctx, {
+    //   position: 'inline',
+    //   anchor:selector,
+      
+    //   onMount: (container: HTMLElement) => {
+    //     mount(App, {
+    //         target: container
+    //     });
+    //   },
     // });
 
     const ui = await createShadowRootUi(ctx, {
@@ -129,6 +135,5 @@ export default defineContentScript({
         });
       },
     });
-    ui.mount();
-  },
-});
+    ui.autoMount();
+}

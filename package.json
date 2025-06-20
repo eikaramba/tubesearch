@@ -1,6 +1,6 @@
 {
-  "name": "svelte-5-extension",
-  "description": "A starter template for building browser extensions with Svelte 5, Tailwind 4, and WXT",
+  "name": "tubesearch",
+  "description": "Search for words in YouTube transcripts and show results in a clickable timeline",
   "private": true,
   "version": "0.0.1",
   "keywords": [
@@ -23,7 +23,8 @@
     "zip:firefox": "wxt zip -b firefox",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "postinstall": "wxt prepare",
-    "clean": "git clean -fXd"
+    "clean": "git clean -fXd",
+    "submit": "pnpm run build:firefox && pnpm run zip:firefox && wxt submit"
   },
   "dependencies": {
     "@types/youtube-player": "^5.5.11",
