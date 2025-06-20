@@ -140,7 +140,7 @@
       onkeydown={preventDefault}
       onkeyup={preventDefault}
       onkeypress={preventDefault}
-      placeholder="Search transcript..."
+      placeholder="comma separated keywords"
       class="flex-grow px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
     />
     <button
@@ -151,7 +151,7 @@
       {#if isLoading}
         <span>Searching...</span>
       {:else}
-        Search
+        Search transcript
       {/if}
     </button>
   </form>

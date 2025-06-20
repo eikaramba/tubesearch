@@ -10,7 +10,7 @@ export default defineConfig({
   manifest: {
     name: 'Video Transcription Search',
     description: 'Search for words in a video and see when they were spoken.',
-    permissions: ['storage', 'tabs', 'scripting'],
+    permissions: ['tabs', 'scripting'],
     host_permissions: ["*://*.youtube.com/*"],
     web_accessible_resources: [
       {
