@@ -16,7 +16,9 @@
     segments = [];
 
     try {
+      // console.log("Searching for keywords in transcript:", searchTerm);
       await ensureTranscriptIsOpen();
+      // console.log("Transcript is open, proceeding with search.");
     } catch (error) {
       console.error(error);
       isLoading = false;
@@ -25,6 +27,7 @@
     }
     
     const transcriptSegments = Array.from(document.querySelectorAll('ytd-transcript-segment-renderer'));
+    // console.log("Found transcript segments:", transcriptSegments.length);
     if (transcriptSegments.length === 0) {
       console.error("Could not find transcript segments.");
       isLoading = false;
@@ -40,6 +43,7 @@
       const text = textEl ? textEl.innerText : '';
       return { time, text };
     });
+    // console.log("Parsed segments:", parsedSegments);
 
     const searchKeywords = searchTerm.split(',').map(k => k.trim()).filter(k => k);
     let foundSegments: Segment[] = [];
@@ -57,6 +61,7 @@
         }));
       foundSegments = foundSegments.concat(keywordSegments);
     });
+    // console.log("Found segments:", foundSegments);
 
     segments = foundSegments.sort((a, b) => a.time - b.time);
     isLoading = false;
@@ -184,5 +189,7 @@
       </div>
     {/each}
   </div>
+  {:else}
+    <p class="mt-4 text-gray-500 dark:text-gray-400">Nothing found</p>
   {/if}
 </div>

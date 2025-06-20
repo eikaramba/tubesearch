@@ -1,5 +1,4 @@
 import { defineConfig } from 'wxt';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
 import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
 import tailwindcss from '@tailwindcss/vite';
@@ -22,7 +21,6 @@ export default defineConfig({
   },
   vite: () => ({
     plugins: [
-      svelte(),
       wasm(),
       topLevelAwait(),
       tailwindcss()
