@@ -148,7 +148,7 @@
   }
 </style>
 
-<div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
+<div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md relative">
   <form onsubmit={search} class="flex gap-2 relative">
     <input
       id="search-words-transcripts"
@@ -190,6 +190,6 @@
     {/each}
   </div>
   {:else}
-    <p class="mt-4 text-gray-500 dark:text-gray-400">Nothing found</p>
+    <p class="mt-4 text-gray-500 dark:text-gray-400 relative">Nothing found</p>
   {/if}
 </div>
