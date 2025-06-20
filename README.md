@@ -1,30 +1,35 @@
-# WXT + Svelte 5 + Tailwind 4 Browser Extension Starter
+# YouTube Word Finder
 
-This template provides a solid foundation for developing browser extensions:
+Find the exact moment a word is spoken in a YouTube video.
 
-- [WXT](https://wxt.dev/): A powerful framework for building cross-browser extensions
-- [Svelte 5](https://svelte-5-preview.vercel.app/): The latest version of the reactive UI framework
-- [TypeScript](https://www.typescriptlang.org/): For type-safe JavaScript development
-- [Tailwind 4](https://tailwindcss.com/blog/tailwindcss-v4-alpha): A utility-first CSS framework
+This browser extension adds a search bar to the YouTube video page, allowing you to search for words in the video's transcript. The results are displayed with timestamps, and you can click on a result to jump to that specific moment in the video.
 
-## Additional Features
+## Screenshot
 
-- WASM support
-- Top-level await
-- Tailwind CSS plugins (forms, typography)
+![Screenshot of the YouTube Word Finder extension in action](screenshot.png)
 
-## Recommended IDE Setup
+## Installation
 
-[VS Code](https://code.visualstudio.com/) with the following extensions:
+### Firefox
 
-- [Svelte for VS Code](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode)
-- [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
-- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+You can download the extension from the official Mozilla Add-ons store:
+[https://addons.mozilla.org/tubesearch](https://addons.mozilla.org/tubesearch)
 
-## Thanks!
+### Chrome
 
-Special thanks to [@wilkerlucio](https://github.com/wilkerlucio) for the [original svelte 5 work](https://github.com/wilkerlucio/media-looper).
+Coming soon!
 
-- [YouTube Looper Code](https://github.com/wilkerlucio/media-looper)
-- [YouTube Looper Extension](https://chrome.google.com/webstore/detail/youtube-looper/bidjeabmcpopfddfcnpniceojmkklcje?hl=en-US&utm_source=chrome-ntp-launcher)
+## How it works
+
+The extension fetches the video's subtitles and allows you to search through them. This is useful for long videos, podcasts, or educational content where you need to find a specific topic quickly.
+
+## Contributing
+
+Contributions are welcome! If you have ideas for new features or improvements, feel free to open an issue or submit a pull request.
+
+## Built with
+
+- [WXT](https://wxt.dev/)
+- [Svelte 5](https://svelte-5-preview.vercel.app/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind 4](https://tailwindcss.com/blog/tailwindcss-v4-alpha)
