@@ -13,7 +13,7 @@ This browser extension adds a search bar to the YouTube video page, allowing you
 ### Firefox
 
 You can download the extension from the official Mozilla Add-ons store:
-[https://addons.mozilla.org/tubesearch](https://addons.mozilla.org/tubesearch)
+[https://addons.mozilla.org/firefox/addon/tubesearch/](https://addons.mozilla.org/firefox/addon/tubesearch/)
 
 ### Chrome
 
